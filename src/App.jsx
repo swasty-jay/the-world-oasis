@@ -1,34 +1,31 @@
-import styled from "styled-components";
-import GlobalStyle from "./styles/GlobalStyles";
-import Button from "./ui/Button";
-import Input from "./ui/Input";
-import Heading from "./ui/Headings";
-
-const StyledApp = styled.div`
-  background-color: orangered;
-  padding: 20px;
-`;
+import React from "react";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Dashboard from "./pages/Dashboard";
+import Bookings from "./pages/Bookings";
+import Cabins from "./pages/Cabins";
+import Users from "./pages/Users";
+import Settings from "./pages/Settings";
+import Account from "./pages/Account";
+import Login from "./pages/Login";
+import PageNotFound from "./pages/PageNotFound"; // Import a 404 page component
 
 const App = () => {
   return (
-    <>
-      <GlobalStyle />
-
-      <StyledApp>
-        <Heading as="h1">the world oasis</Heading>
-        <Heading as="h2">check in and out</Heading>
-        <Button>click me</Button>
-        <Button>click out</Button>
-
-        <Heading as="h3">for input</Heading>
-
-        <Input type="number" placeholder="Enter number of guest here" />
-        {""}
-        <Input type="number" placeholder="Enter number of guest here" />
-      </StyledApp>
-    </>
+    <BrowserRouter>
+      <Routes>
+        {/* Define your routes here */}
+        <Route path="dashboard" element={<Dashboard />} />
+        <Route path="bookings" element={<Bookings />} />
+        <Route path="cabins" element={<Cabins />} />
+        <Route path="users" element={<Users />} />
+        <Route path="settings" element={<Settings />} />
+        <Route path="account" element={<Account />} />
+        <Route path="login" element={<Login />} /> {/* Fallback route */}
+        <Route path="*" element={<PageNotFound />} /> {/* Default route */}
+        {/* Add more routes as needed */}
+      </Routes>
+    </BrowserRouter>
   );
 };
 
 export default App;
-("");
