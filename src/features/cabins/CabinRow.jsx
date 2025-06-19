@@ -2,6 +2,7 @@ import styled from "styled-components";
 import { formatCurrency } from "../../utils/helpers";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { DeleteCabin } from "../../services/ApiCabins";
+import toast from "react-hot-toast";
 
 ////////////////
 const TableRow = styled.div`
@@ -60,11 +61,11 @@ const CabinRow = ({ cabin }) => {
 
     onSuccess: () => {
       // Invalidate the "cabin" query to refetch the data
-      alert("Cabin deleted successfully");
+      toast.success("Cabin deleted successfully");
       queryclient.invalidateQueries({ queryKey: ["cabin"] });
     },
     onError: (error) => {
-      alert(error.message);
+      toast.error(error.message);
     },
   });
 
