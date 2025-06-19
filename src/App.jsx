@@ -47,7 +47,7 @@ const App = () => {
           </Routes>
         </BrowserRouter>
         <Toaster
-          position="top-cnter"
+          position="right-top"
           gutter={12}
           containerStyle={{ margin: "8px" }}
           toastOptions={{
