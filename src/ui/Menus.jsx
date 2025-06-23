@@ -2,6 +2,7 @@ import { createContext, useContext, useState } from "react";
 import { createPortal } from "react-dom";
 import { HiEllipsisVertical } from "react-icons/hi2";
 import styled from "styled-components";
+import { useCloseModal } from "../hooks/useCloseModal";
 
 const Menu = styled.div`
   display: flex;
@@ -28,17 +29,25 @@ const StyledToggle = styled.button`
   }
 `;
 
+// const StyledList = styled.ul`
+//   position: fixed;
+
+//   background-color: var(--color-grey-0);
+//   box-shadow: var(--shadow-md);
+//   border-radius: var(--border-radius-md);
+
+//   right: ${(props) => props.$position.x}px;
+//   top: ${(props) => props.$position.y}px;
+// `;
+
 const StyledList = styled.ul`
   position: fixed;
-
   background-color: var(--color-grey-0);
   box-shadow: var(--shadow-md);
   border-radius: var(--border-radius-md);
-
-  right: ${(props) => props.position.x}px;
-  top: ${(props) => props.position.y}px;
+  right: ${(props) => props.$position?.x ?? 0}px;
+  top: ${(props) => props.$position?.y ?? 0}px;
 `;
-
 const StyledButton = styled.button`
   width: 100%;
   text-align: left;
@@ -68,23 +77,37 @@ const MenusContext = createContext();
 
 function Menus({ children }) {
   const [openId, setOpenId] = useState("");
+  const [position, setPosition] = useState(null);
 
   const close = () => setOpenId("");
 
   const open = setOpenId;
 
   return (
-    <MenusContext.Provider value={{ openId, close, open }}>
+    <MenusContext.Provider
+      value={{ openId, close, open, position, setPosition }}
+    >
       {children}
     </MenusContext.Provider>
   );
 }
 
 function Toggle({ id }) {
-  const { openId, open, close } = useContext(MenusContext);
+  const { openId, open, close, setPosition } = useContext(MenusContext);
 
   function handleclick(e) {
     const rect = e.target.closest("button").getBoundingClientRect();
+    console.log(rect);
+
+    // setPosition({
+    //   x: window.innerHeight - rect.width - rect.x,
+    //   y: rect.y + rect.height + 8,
+    // });
+
+    setPosition({
+      x: window.innerWidth - (rect.x + rect.width),
+      y: rect.y + rect.height + 8,
+    });
     openId === "" || openId !== id ? open(id) : close();
   }
   return (
@@ -95,20 +118,30 @@ function Toggle({ id }) {
 }
 
 function List({ id, children }) {
-  const { openId } = useContext(MenusContext);
+  const { openId, position, close } = useContext(MenusContext);
+  const ref = useCloseModal(close);
 
   if (openId !== id) return null;
 
   return createPortal(
-    <StyledList position={{ x: 20, y: 20 }}>{children} </StyledList>,
+    <StyledList ref={ref} $position={position}>
+      {children}{" "}
+    </StyledList>,
     document.body
   );
 }
 
-function Button({ children }) {
+function Button({ children, icon, onClick }) {
+  const { close } = useContext(MenusContext);
+  function handleclick() {
+    onClick?.();
+    close();
+  }
   return (
     <li>
-      <StyledButton>{children}</StyledButton>
+      <StyledButton onClick={handleclick}>
+        {icon} <span>{children}</span>{" "}
+      </StyledButton>
     </li>
   );
 }

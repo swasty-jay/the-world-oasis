@@ -136,7 +136,7 @@ function CreateCabinForm({ cabinToEdit = {}, onCloseModal }) {
       <FormRow>
         {/* type is an HTML attribute! */}
         <Button
-          variation="secondary"
+          $variation="secondary"
           type="reset"
           ///optional chaining to avoid bug when reusing the modal somewhere
           onClick={() => onCloseModal?.()}
