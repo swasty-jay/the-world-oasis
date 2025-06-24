@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { isFuture, isPast, isToday } from "date-fns";
-import supabase from "../services/supabase";
+import supabase from "../services/Supabase";
 import Button from "../ui/Button";
 import { subtractDates } from "../utils/helpers";
 
@@ -55,42 +55,42 @@ async function createBookings() {
 
   const finalBookings = bookings.map((booking) => {
     // Here relying on the order of cabins, as they don't have and ID yet
-    const cabin = cabins.at(booking.cabinId - 1);
-    const numNights = subtractDates(booking.endDate, booking.startDate);
-    const cabinPrice = numNights * (cabin.regularPrice - cabin.discount);
-    const extrasPrice = booking.hasBreakfast
-      ? numNights * 15 * booking.numGuests
+    const cabin = cabins.at(booking.CabinId - 1);
+    const NumNights = subtractDates(booking.EndDate, booking.StartDate);
+    const CabinPrice = NumNights * (cabin.regularPrice - cabin.discount);
+    const ExtraPrice = booking.HasBreakFast
+      ? NumNights * 15 * booking.NumGuests
       : 0; // hardcoded breakfast price
-    const totalPrice = cabinPrice + extrasPrice;
+    const TotalPrice = CabinPrice + ExtraPrice;
 
-    let status;
+    let Status;
     if (
-      isPast(new Date(booking.endDate)) &&
-      !isToday(new Date(booking.endDate))
+      isPast(new Date(booking.EndDate)) &&
+      !isToday(new Date(booking.EndDate))
     )
-      status = "checked-out";
+      Status = "checked-out";
     if (
-      isFuture(new Date(booking.startDate)) ||
-      isToday(new Date(booking.startDate))
+      isFuture(new Date(booking.StartDate)) ||
+      isToday(new Date(booking.StartDate))
     )
-      status = "unconfirmed";
+      Status = "unconfirmed";
     if (
-      (isFuture(new Date(booking.endDate)) ||
-        isToday(new Date(booking.endDate))) &&
-      isPast(new Date(booking.startDate)) &&
-      !isToday(new Date(booking.startDate))
+      (isFuture(new Date(booking.EndDate)) ||
+        isToday(new Date(booking.EndDate))) &&
+      isPast(new Date(booking.StartDate)) &&
+      !isToday(new Date(booking.StartDate))
     )
-      status = "checked-in";
+      Status = "checked-in";
 
     return {
       ...booking,
-      numNights,
-      cabinPrice,
-      extrasPrice,
-      totalPrice,
-      guestId: allGuestIds.at(booking.guestId - 1),
-      cabinId: allCabinIds.at(booking.cabinId - 1),
-      status,
+      NumNights,
+      CabinPrice,
+      ExtraPrice,
+      TotalPrice,
+      GuestId: allGuestIds.at(booking.GuestId - 1),
+      CabinId: allCabinIds.at(booking.CabinId - 1),
+      Status,
     };
   });
 
