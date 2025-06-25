@@ -1,12 +1,23 @@
 import { getToday } from "../utils/helpers";
 import supabase from "../services/Supabase";
-export async function getBookings() {
-  const { data, error } = await supabase
+
+export async function getBookings({ filter, sortBy }) {
+  let query = supabase
     .from("bookings")
     .select(
       "id,created_at, StartDate,EndDate,NumNights,NumGuests,Status,TotalPrice,cabins(name),guests(FullName, Email)"
     );
+  //filter
+  if (filter) query = query[filter.method || "eq"](filter.field, filter.value);
 
+  ////sort
+
+  if (sortBy)
+    query = query.order(sortBy.field, {
+      ascending: sortBy.direction === "asc",
+    });
+
+  const { data, error } = await query;
   if (error) {
     console.error(error);
 
@@ -35,7 +46,7 @@ export async function getBooking(id) {
 export async function getBookingsAfterDate(date) {
   const { data, error } = await supabase
     .from("bookings")
-    .select("created_at, totalPrice, extrasPrice")
+    .select("created_at, TotalPrice, ExtraPrice")
     .gte("created_at", date)
     .lte("created_at", getToday({ end: true }));
 
@@ -52,9 +63,9 @@ export async function getStaysAfterDate(date) {
   const { data, error } = await supabase
     .from("bookings")
     // .select('*')
-    .select("*, guests(fullName)")
-    .gte("startDate", date)
-    .lte("startDate", getToday());
+    .select("*, guests(FullName)")
+    .gte("StartDate", date)
+    .lte("StartDate", getToday());
 
   if (error) {
     console.error(error);
@@ -68,9 +79,9 @@ export async function getStaysAfterDate(date) {
 export async function getStaysTodayActivity() {
   const { data, error } = await supabase
     .from("bookings")
-    .select("*, guests(fullName, nationality, countryFlag)")
+    .select("*, Guests(FullName, Nationality, CountryFlag)")
     .or(
-      `and(status.eq.unconfirmed,startDate.eq.${getToday()}),and(status.eq.checked-in,endDate.eq.${getToday()})`
+      `and(Status.eq.unconfirmed,StartDate.eq.${getToday()}),and(Status.eq.checked-in,EndDate.eq.${getToday()})`
     )
     .order("created_at");
 
